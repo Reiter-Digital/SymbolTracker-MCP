@@ -1,0 +1,253 @@
+{
+  "symbols": [
+    {
+      "symbol": "add",
+      "type": "function",
+      "file": "/Users/markus/dev/DocumentationMCP/src/test-js-sample.js",
+      "description": "A sample JavaScript file to test the MCP DevDocs Server",
+      "signature": "(a, b): number",
+      "exported": true
+    },
+    {
+      "symbol": "AuthManager",
+      "type": "class",
+      "file": "/Users/markus/dev/DocumentationMCP/src/test-js-sample.js",
+      "description": "A class that manages user authentication",
+      "exported": true,
+      "metadata": {
+        "isComponent": false
+      }
+    },
+    {
+      "symbol": "login",
+      "type": "method",
+      "file": "/Users/markus/dev/DocumentationMCP/src/test-js-sample.js",
+      "description": "Logs in a user",
+      "signature": "(user): boolean",
+      "parentSymbol": "AuthManager",
+      "exported": true,
+      "metadata": {
+        "visibility": "public"
+      }
+    },
+    {
+      "symbol": "logout",
+      "type": "method",
+      "file": "/Users/markus/dev/DocumentationMCP/src/test-js-sample.js",
+      "description": "Logs out a user",
+      "signature": "(userId): void",
+      "parentSymbol": "AuthManager",
+      "exported": true,
+      "metadata": {
+        "visibility": "public"
+      }
+    },
+    {
+      "symbol": "_isLoggedIn",
+      "type": "method",
+      "file": "/Users/markus/dev/DocumentationMCP/src/test-js-sample.js",
+      "description": "Checks if a user is logged in",
+      "signature": "(userId): boolean",
+      "parentSymbol": "AuthManager",
+      "exported": true,
+      "metadata": {
+        "visibility": "public"
+      }
+    },
+    {
+      "symbol": "GET /api/users",
+      "type": "route",
+      "file": "/Users/markus/dev/DocumentationMCP/src/test-js-sample.js",
+      "description": "GET /api/users",
+      "metadata": {
+        "method": "GET",
+        "path": "/api/users",
+        "handler": "<inline function>"
+      }
+    },
+    {
+      "symbol": "POST /api/users",
+      "type": "route",
+      "file": "/Users/markus/dev/DocumentationMCP/src/test-js-sample.js",
+      "description": "POST /api/users",
+      "metadata": {
+        "method": "POST",
+        "path": "/api/users",
+        "handler": "<inline function>"
+      }
+    },
+    {
+      "symbol": "public_function",
+      "type": "function",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "This is a public function.\n\nArgs:\n    param1: The first parameter.\n    param2: The second parameter (optional).\n\nReturns:\n    Always returns True.",
+      "signature": "(param1, param2): bool",
+      "exported": true
+    },
+    {
+      "symbol": "_private_function",
+      "type": "function",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "A private function.",
+      "signature": "(): any",
+      "exported": false
+    },
+    {
+      "symbol": "home_page",
+      "type": "function",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "Serves the home page.",
+      "signature": "(): any",
+      "exported": true
+    },
+    {
+      "symbol": "get_item",
+      "type": "function",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "Gets an item by its ID.\n\nArgs:\n    item_id: The ID of the item to retrieve.\n\nReturns:\n    A dictionary representing the item.",
+      "signature": "(item_id): any",
+      "exported": true
+    },
+    {
+      "symbol": "MyClass",
+      "type": "class",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "A sample class for testing.\n\nAttributes:\n    name (str): The name of the instance.",
+      "exported": true,
+      "metadata": {
+        "isComponent": false
+      }
+    },
+    {
+      "symbol": "__init__",
+      "type": "method",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "Initialize MyClass.",
+      "signature": "(name): any",
+      "parentSymbol": "MyClass",
+      "exported": true,
+      "metadata": {
+        "visibility": "private"
+      }
+    },
+    {
+      "symbol": "public_method",
+      "type": "method",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "A public method.",
+      "signature": "(value): any",
+      "parentSymbol": "MyClass",
+      "exported": true,
+      "metadata": {
+        "visibility": "public"
+      }
+    },
+    {
+      "symbol": "_protected_method",
+      "type": "method",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "A protected method.",
+      "signature": "(): any",
+      "parentSymbol": "MyClass",
+      "exported": true,
+      "metadata": {
+        "visibility": "protected"
+      }
+    },
+    {
+      "symbol": "__private_method",
+      "type": "method",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "A private method.",
+      "signature": "(): any",
+      "parentSymbol": "MyClass",
+      "exported": true,
+      "metadata": {
+        "visibility": "private"
+      }
+    },
+    {
+      "symbol": "MockApp",
+      "type": "class",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "This is a sample Python module for testing the parser.\n\nIt includes various Python constructs.",
+      "exported": true,
+      "metadata": {
+        "isComponent": false
+      }
+    },
+    {
+      "symbol": "route",
+      "type": "method",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "",
+      "signature": "(path, methods): any",
+      "parentSymbol": "MockApp",
+      "exported": true,
+      "metadata": {
+        "visibility": "public"
+      }
+    },
+    {
+      "symbol": "decorator",
+      "type": "method",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "",
+      "signature": "(func): any",
+      "parentSymbol": "MockApp",
+      "exported": true,
+      "metadata": {
+        "visibility": "public"
+      }
+    },
+    {
+      "symbol": "get",
+      "type": "method",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "",
+      "signature": "(path): any",
+      "parentSymbol": "MockApp",
+      "exported": true,
+      "metadata": {
+        "visibility": "public"
+      }
+    },
+    {
+      "symbol": "GET /home",
+      "type": "route",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "Serves the home page.",
+      "metadata": {
+        "method": "GET",
+        "path": "/home",
+        "handler": "home_page"
+      }
+    },
+    {
+      "symbol": "GET /api/items/{item_id}",
+      "type": "route",
+      "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "description": "Gets an item by its ID.\n\nArgs:\n    item_id: The ID of the item to retrieve.\n\nReturns:\n    A dictionary representing the item.",
+      "metadata": {
+        "method": "GET",
+        "path": "/api/items/{item_id}",
+        "handler": "get_item"
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "/Users/markus/dev/DocumentationMCP/src/test-js-sample.js",
+      "lastParsed": 1743193105739,
+      "lastModified": 1743192977408.6797,
+      "exists": true
+    },
+    {
+      "path": "/Users/markus/dev/DocumentationMCP/test_sample.py",
+      "lastParsed": 1743195191302,
+      "lastModified": 1743194034349.4773,
+      "exists": true
+    }
+  ],
+  "lastFullRefresh": 1743192991393
+}

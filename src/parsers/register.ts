@@ -1,6 +1,7 @@
 import { parserRegistry } from './index';
 import { TypeScriptParser } from './typescript';
 import { JavaScriptParser } from './javascript';
+import { PythonParser } from './python';
 
 /**
  * Initialize and register all parsers
@@ -12,7 +13,6 @@ export function registerParsers(): void {
   // Register JavaScript parser
   parserRegistry.registerParser(new JavaScriptParser());
   
-  // Add more parsers here as they are implemented
-  // Example:
-  // parserRegistry.registerParser(new PythonParser());
+  // Register Python parser
+  parserRegistry.registerParser(new PythonParser());
 }
