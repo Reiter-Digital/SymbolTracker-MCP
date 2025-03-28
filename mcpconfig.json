@@ -1,0 +1,12 @@
+{
+  "include": {
+    "extensions": ["ts", "js", "tsx", "jsx", "py"],
+    "directories": ["src", "tests"],
+    "files": []
+  },
+  "exclude": {
+    "extensions": [],
+    "directories": ["node_modules", "dist", "backup", ".git"],
+    "files": [".*", "*.snap", "*.log", "*.lock", "Dockerfile", "jest.config.js", "tsconfig.json"]
+  }
+}

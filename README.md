@@ -28,14 +28,50 @@ A custom MCP (Model Context Protocol) server that allows Claude/Windsurf to quer
 
 - **Symbol Registry** – Tracks all functions, classes, and types across your codebase
 
-- **Freshness Tracking** – Automatically detects file changes and updates the registry
+- **Freshness Tracking** – Automatically detects file changes via watchers. When a file is modified, it's re-parsed, and its *entire* set of previous symbols are removed from the registry before adding the newly found symbols. This ensures additions, modifications, and deletions within a file are accurately reflected. Manual refresh is also available via `refresh_registry`.
 
 - **Multi-Language Support**:
   - TypeScript – Uses [ts-morph](https://ts-morph.com/) for robust TypeScript AST parsing
   - JavaScript – Full support for JS files including JSDoc comments
   - Python – Improved support using Tree-sitter: extracts functions, classes, methods (inc. params, visibility), docstrings, and basic routes.
+  - JSX/TSX (React) – Planned
+  - HTML/CSS/SCSS – Planned
+  - Rust – Planned
+  - Go – Planned
+  - Java – Planned
+  - Swift – Planned
+  - Dart (Flutter) – Planned
 
 - **Persistence** – Symbol registry is saved to disk for faster startup
+
+### Configuration (`mcpconfig.json`)
+
+You can customize file scanning behavior by creating an `mcpconfig.json` file in your project root. It allows you to specify include/exclude patterns for file extensions, directories, and specific files. If the file doesn't exist, default settings are used.
+
+**Example `mcpconfig.json`:**
+
+```json
+{
+  "include": {
+    "extensions": ["ts", "js", "tsx", "jsx", "py"],
+    "directories": ["src", "tests"],
+    "files": []
+  },
+  "exclude": {
+    "extensions": [],
+    "directories": ["node_modules", "dist", "backup", ".git"],
+    "files": [".*", "*.snap", "*.log", "*.lock", "Dockerfile", "jest.config.js", "tsconfig.json"]
+  }
+}
+```
+
+### Planned Features
+
+- **`summarize_project` Tool** – Generate a high-level overview of the project structure, including key classes, functions, and routes. (Planned)
+- **Enhanced Symbol Lookup** – Improve `get_doc_for_symbol` and `find_usages` to handle qualified names like `ClassName.methodName` more effectively. (Planned)
+- **Configuration File Integration** – Fully integrate `mcpconfig.json` to control file scanning. (In Progress)
+- **More Robust Route Detection** – Support for Flask Blueprints, FastAPI routers, and other common patterns. (Planned)
+- **Test Coverage Expansion** – Add more granular tests for specific language features and edge cases. (Ongoing)
 
 ## Installation
 
@@ -360,3 +396,7 @@ npm test
 ## License
 
 MIT
+
+## TL;DR
+
+This project provides a set of tools to analyze your codebase (TypeScript, JavaScript, Python initially) and build a persistent registry of symbols (functions, classes, etc.). It includes features for searching symbols, getting documentation, finding usages, and automatically keeping the registry up-to-date as you code. It aims to be a foundation for various code intelligence features.

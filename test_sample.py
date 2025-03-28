@@ -29,7 +29,7 @@ def _private_function():
 
 # --- Classes ---
 
-class MyClass:
+class MyRenamedClass:
     """
     A sample class for testing.
 
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     print("Running test sample...")
     public_function("test", 1)
     _private_function()
-    instance = MyClass("TestInstance")
+    instance = MyRenamedClass("TestInstance")
     instance.public_method(100)
     instance._protected_method()
     # instance.__private_method() # This would raise an AttributeError if called directly

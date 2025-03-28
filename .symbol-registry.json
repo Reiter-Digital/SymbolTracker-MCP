@@ -109,7 +109,7 @@
       "exported": true
     },
     {
-      "symbol": "MyClass",
+      "symbol": "MyRenamedClass",
       "type": "class",
       "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
       "description": "A sample class for testing.\n\nAttributes:\n    name (str): The name of the instance.",
@@ -124,7 +124,7 @@
       "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
       "description": "Initialize MyClass.",
       "signature": "(name): any",
-      "parentSymbol": "MyClass",
+      "parentSymbol": "MyRenamedClass",
       "exported": true,
       "metadata": {
         "visibility": "private"
@@ -136,7 +136,7 @@
       "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
       "description": "A public method.",
       "signature": "(value): any",
-      "parentSymbol": "MyClass",
+      "parentSymbol": "MyRenamedClass",
       "exported": true,
       "metadata": {
         "visibility": "public"
@@ -148,7 +148,7 @@
       "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
       "description": "A protected method.",
       "signature": "(): any",
-      "parentSymbol": "MyClass",
+      "parentSymbol": "MyRenamedClass",
       "exported": true,
       "metadata": {
         "visibility": "protected"
@@ -160,7 +160,7 @@
       "file": "/Users/markus/dev/DocumentationMCP/test_sample.py",
       "description": "A private method.",
       "signature": "(): any",
-      "parentSymbol": "MyClass",
+      "parentSymbol": "MyRenamedClass",
       "exported": true,
       "metadata": {
         "visibility": "private"
@@ -244,8 +244,8 @@
     },
     {
       "path": "/Users/markus/dev/DocumentationMCP/test_sample.py",
-      "lastParsed": 1743195191302,
-      "lastModified": 1743194034349.4773,
+      "lastParsed": 1743195354052,
+      "lastModified": 1743195348696.2024,
       "exists": true
     }
   ],
