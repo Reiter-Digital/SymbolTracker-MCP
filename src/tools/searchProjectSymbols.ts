@@ -1,4 +1,5 @@
 import { symbolRegistry, SymbolType, SymbolSearchResult } from '../registry/symbolRegistry';
+import { refreshRegistry } from './refreshRegistry';
 
 /**
  * Input interface for the search_project_symbols tool
@@ -24,6 +25,9 @@ export async function searchProjectSymbols(input: SearchProjectSymbolsInput): Pr
       results: []
     };
   }
+  
+  // Ensure registry is up-to-date
+  await refreshRegistry({ fullScan: false });
 
   // Convert type string to enum if provided
   let symbolType: SymbolType | undefined;

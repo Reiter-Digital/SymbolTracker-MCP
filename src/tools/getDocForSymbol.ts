@@ -1,4 +1,5 @@
 import { symbolRegistry, SymbolType, SymbolInfo } from '../registry/symbolRegistry';
+import { refreshRegistry } from './refreshRegistry';
 
 /**
  * Input for the get_doc_for_symbol tool
@@ -52,6 +53,9 @@ export async function getDocForSymbol(input: GetDocForSymbolInput): Promise<GetD
       error: 'Missing or invalid symbol name'
     };
   }
+  
+  // Ensure registry is up-to-date
+  await refreshRegistry({ fullScan: false });
 
   // Convert type string to enum if provided
   let symbolType: SymbolType | undefined;

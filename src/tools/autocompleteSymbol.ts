@@ -1,4 +1,5 @@
 import { symbolRegistry, SymbolType } from '../registry/symbolRegistry';
+import { refreshRegistry } from './refreshRegistry';
 
 /**
  * Input for the autocomplete_symbol tool
@@ -33,6 +34,9 @@ export async function autocompleteSymbol(input: AutocompleteSymbolInput): Promis
   if (!input.prefix || typeof input.prefix !== 'string') {
     return { completions: [] };
   }
+  
+  // Ensure registry is up-to-date
+  await refreshRegistry({ fullScan: false });
 
   // Convert type string to enum if provided
   let symbolType: SymbolType | undefined;

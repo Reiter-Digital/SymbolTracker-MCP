@@ -6,6 +6,7 @@ import { searchProjectSymbols, SearchProjectSymbolsInput } from './tools/searchP
 import { autocompleteSymbol, AutocompleteSymbolInput } from './tools/autocompleteSymbol';
 import { getDocForSymbol, GetDocForSymbolInput } from './tools/getDocForSymbol';
 import { findUsages, FindUsagesInput } from './tools/findUsages';
+import { refreshRegistry, RefreshRegistryInput } from './tools/refreshRegistry';
 
 // Define interfaces for MCP protocol
 interface MCPRequest {
@@ -14,7 +15,7 @@ interface MCPRequest {
 }
 
 // Supported MCP tool names
-type MCPToolName = 'get_doc_for_file' | 'search_project_symbols' | 'autocomplete_symbol' | 'get_doc_for_symbol' | 'find_usages';
+type MCPToolName = 'get_doc_for_file' | 'search_project_symbols' | 'autocomplete_symbol' | 'get_doc_for_symbol' | 'find_usages' | 'refresh_registry';
 
 // Define interfaces for MCP responses
 interface ErrorResponse {
@@ -87,6 +88,9 @@ async function processMCPRequest(requestJson: string): Promise<void> {
         break;
       case 'find_usages':
         response = await handleFindUsages(request.input as FindUsagesInput);
+        break;
+      case 'refresh_registry':
+        response = await handleRefreshRegistry(request.input as RefreshRegistryInput);
         break;
       default:
         response = {
@@ -180,4 +184,14 @@ async function handleGetDocForSymbol(input: GetDocForSymbolInput): Promise<any> 
 async function handleFindUsages(input: FindUsagesInput): Promise<any> {
   // Pass through to the findUsages implementation
   return await findUsages(input);
+}
+
+/**
+ * Handles the refresh_registry tool request
+ * @param input The refresh registry input
+ * @returns Registry refresh results
+ */
+async function handleRefreshRegistry(input: RefreshRegistryInput): Promise<any> {
+  // Pass through to the refreshRegistry implementation
+  return await refreshRegistry(input);
 }

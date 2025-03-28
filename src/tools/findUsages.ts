@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { symbolRegistry, SymbolType } from '../registry/symbolRegistry';
 import { globSync } from 'glob';
+import { refreshRegistry } from './refreshRegistry';
 
 /**
  * Input for the find_usages tool
@@ -52,6 +53,9 @@ export async function findUsages(input: FindUsagesInput): Promise<FindUsagesResu
       limitReached: false
     };
   }
+  
+  // Ensure registry is up-to-date
+  await refreshRegistry({ fullScan: false });
 
   // Convert type string to enum if provided
   let symbolType: SymbolType | undefined;

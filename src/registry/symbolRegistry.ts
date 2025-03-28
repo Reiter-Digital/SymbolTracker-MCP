@@ -473,34 +473,46 @@ export class SymbolRegistry {
   }
   
   /**
-   * Refresh the registry to handle file changes
-   * @param baseDir Base directory to scan for files (default: current working directory)
+   * Get list of files that need to be refreshed
+   * @returns Array of file paths that need refreshing
    */
-  async refresh(baseDir: string = process.cwd()): Promise<void> {
+  async getFilesNeedingRefresh(): Promise<string[]> {
+    return this.files
+      .filter(f => f.exists && this.fileNeedsRefresh(f.path))
+      .map(f => f.path);
+  }
+  
+  /**
+   * Remove all symbols for a specific file
+   * @param filePath Path to the file
+   */
+  removeFileSymbols(filePath: string): void {
+    const absolutePath = path.resolve(filePath);
+    this.symbols = this.symbols.filter(s => s.file !== absolutePath);
+    
+    // Mark file as no longer existing if it doesn't exist
+    if (!fs.existsSync(absolutePath)) {
+      const fileIndex = this.files.findIndex(f => f.path === absolutePath);
+      if (fileIndex >= 0) {
+        this.files[fileIndex].exists = false;
+      }
+    }
+    
+    // Persist changes
+    this.persistToDisk();
+  }
+  
+  /**
+   * Refresh the registry to handle file changes
+   * For backward compatibility - now just identifies files needing refresh
+   * @returns Array of file paths that need refreshing
+   */
+  async refresh(): Promise<string[]> {
     // Clean up symbols for deleted files
     this.cleanupDeletedFiles();
     
     // Find all tracked files that need refresh
-    const filesToRefresh = this.files
-      .filter(f => f.exists && this.fileNeedsRefresh(f.path))
-      .map(f => f.path);
-    
-    // Return without further action if no files need refresh
-    if (filesToRefresh.length === 0) {
-      return;
-    }
-    
-    // TODO: This would re-parse the files, but we'd need access to the parsers
-    // For now, we'll just remove the symbols for these files
-    for (const file of filesToRefresh) {
-      this.symbols = this.symbols.filter(s => s.file !== file);
-    }
-    
-    // Update the last full refresh timestamp
-    this.lastFullRefresh = Date.now();
-    
-    // Persist the changes
-    this.persistToDisk();
+    return this.getFilesNeedingRefresh();
   }
   
   /**
