@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Project, SourceFile, SyntaxKind, Node, FunctionDeclaration, ClassDeclaration, InterfaceDeclaration, TypeAliasDeclaration, MethodDeclaration, PropertyDeclaration } from 'ts-morph';
+import { Project, SourceFile, SyntaxKind, Node } from 'ts-morph';
 
 // Interface for the input
 export interface GetDocForFileInput {
@@ -84,7 +84,7 @@ interface FileDocResponse {
 }
 
 /**
- * Extracts documentation from a TypeScript file
+ * Extracts documentation from a TypeScript or JavaScript file
  * @param input The input object containing the file path
  * @returns Structured documentation or error response
  */
@@ -109,16 +109,21 @@ export async function getDocForFile(input: GetDocForFileInput): Promise<FileDocR
 
   // Check file extension
   const ext = path.extname(filePath).toLowerCase();
-  if (!['.ts', '.tsx'].includes(ext)) {
+  if (!['.ts', '.tsx', '.js', '.jsx'].includes(ext)) {
     return {
       error: 'Unsupported file type',
-      details: `Only TypeScript (.ts, .tsx) files are supported. Got: ${ext}`
+      details: `Only TypeScript (.ts, .tsx) and JavaScript (.js, .jsx) files are supported. Got: ${ext}`
     };
   }
 
   try {
-    // Create a ts-morph Project
-    const project = new Project();
+    // Create a ts-morph Project with appropriate compiler options
+    const project = new Project({
+      compilerOptions: {
+        allowJs: true,  // Allow JavaScript files
+        checkJs: true,  // Enable type checking for JavaScript files
+      }
+    });
     
     // Add the file to the project
     const sourceFile = project.addSourceFileAtPath(filePath);

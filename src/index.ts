@@ -9,12 +9,13 @@ interface MCPRequest {
   input: Record<string, any>;
 }
 
-interface MCPErrorResponse {
+// Define interfaces for MCP responses
+interface ErrorResponse {
   error: string;
   details?: string;
 }
 
-type MCPResponse = Record<string, any> | MCPErrorResponse;
+type MCPResponse = Record<string, any> | ErrorResponse;
 
 // Create readline interface for stdin/stdout
 const rl = readline.createInterface({
@@ -30,7 +31,7 @@ async function processMCPRequest(requestJson: string): Promise<void> {
   try {
     request = JSON.parse(requestJson);
   } catch (error) {
-    const response: MCPErrorResponse = {
+    const response: ErrorResponse = {
       error: 'Invalid JSON',
       details: (error as Error).message
     };
@@ -40,7 +41,7 @@ async function processMCPRequest(requestJson: string): Promise<void> {
 
   // Validate the request
   if (!request.tool || typeof request.tool !== 'string') {
-    const response: MCPErrorResponse = {
+    const response: ErrorResponse = {
       error: 'Invalid request',
       details: 'Missing or invalid "tool" field'
     };
@@ -49,7 +50,7 @@ async function processMCPRequest(requestJson: string): Promise<void> {
   }
 
   if (!request.input || typeof request.input !== 'object') {
-    const response: MCPErrorResponse = {
+    const response: ErrorResponse = {
       error: 'Invalid request',
       details: 'Missing or invalid "input" field'
     };
@@ -66,7 +67,7 @@ async function processMCPRequest(requestJson: string): Promise<void> {
   try {
     switch (request.tool) {
       case 'get_doc_for_file':
-        response = await getDocForFile(request.input as GetDocForFileInput);
+        response = await handleGetDocForFile(request.input as GetDocForFileInput);
         break;
       default:
         response = {
@@ -111,3 +112,13 @@ const idleTimer = setTimeout(() => {
 rl.on('line', () => {
   clearTimeout(idleTimer);
 });
+
+/**
+ * Handles the get_doc_for_file tool request
+ * @param input The input with the file path
+ * @returns Documentation for the file or an error response
+ */
+async function handleGetDocForFile(input: GetDocForFileInput): Promise<any> {
+  // Simply pass through to the getDocForFile implementation
+  return await getDocForFile(input);
+}
