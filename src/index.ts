@@ -2,12 +2,16 @@
 import * as readline from 'readline';
 import * as path from 'path';
 import { getDocForFile, GetDocForFileInput } from './tools/getDocForFile';
+import { searchProjectSymbols, SearchProjectSymbolsInput } from './tools/searchProjectSymbols';
 
 // Define interfaces for MCP protocol
 interface MCPRequest {
   tool: string;
   input: Record<string, any>;
 }
+
+// Supported MCP tool names
+type MCPToolName = 'get_doc_for_file' | 'search_project_symbols';
 
 // Define interfaces for MCP responses
 interface ErrorResponse {
@@ -69,6 +73,9 @@ async function processMCPRequest(requestJson: string): Promise<void> {
       case 'get_doc_for_file':
         response = await handleGetDocForFile(request.input as GetDocForFileInput);
         break;
+      case 'search_project_symbols':
+        response = await handleSearchProjectSymbols(request.input as SearchProjectSymbolsInput);
+        break;
       default:
         response = {
           error: 'Unknown tool',
@@ -119,6 +126,16 @@ rl.on('line', () => {
  * @returns Documentation for the file or an error response
  */
 async function handleGetDocForFile(input: GetDocForFileInput): Promise<any> {
-  // Simply pass through to the getDocForFile implementation
+  // Pass through to the getDocForFile implementation
   return await getDocForFile(input);
+}
+
+/**
+ * Handles the search_project_symbols tool request
+ * @param input The search query input
+ * @returns Symbol search results
+ */
+async function handleSearchProjectSymbols(input: SearchProjectSymbolsInput): Promise<any> {
+  // Pass through to the searchProjectSymbols implementation
+  return await searchProjectSymbols(input);
 }

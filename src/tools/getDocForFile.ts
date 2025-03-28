@@ -3,6 +3,7 @@ import * as path from 'path';
 import { parserRegistry } from '../parsers';
 import { registerParsers } from '../parsers/register';
 import { FileDocResponse, ErrorResponse } from '../types';
+import { symbolRegistry } from '../registry/symbolRegistry';
 
 // Interface for the input
 export interface GetDocForFileInput {
@@ -49,7 +50,14 @@ export async function getDocForFile(input: GetDocForFileInput): Promise<FileDocR
   
   try {
     // Use the parser to parse the file
-    return await parser.parseFile(filePath);
+    const result = await parser.parseFile(filePath);
+    
+    // If parsing was successful, register the symbols
+    if (!('error' in result)) {
+      symbolRegistry.registerFileSymbols(result);
+    }
+    
+    return result;
   } catch (error) {
     return {
       error: 'Parsing error',
