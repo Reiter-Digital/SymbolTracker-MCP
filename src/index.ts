@@ -3,6 +3,9 @@ import * as readline from 'readline';
 import * as path from 'path';
 import { getDocForFile, GetDocForFileInput } from './tools/getDocForFile';
 import { searchProjectSymbols, SearchProjectSymbolsInput } from './tools/searchProjectSymbols';
+import { autocompleteSymbol, AutocompleteSymbolInput } from './tools/autocompleteSymbol';
+import { getDocForSymbol, GetDocForSymbolInput } from './tools/getDocForSymbol';
+import { findUsages, FindUsagesInput } from './tools/findUsages';
 
 // Define interfaces for MCP protocol
 interface MCPRequest {
@@ -11,7 +14,7 @@ interface MCPRequest {
 }
 
 // Supported MCP tool names
-type MCPToolName = 'get_doc_for_file' | 'search_project_symbols';
+type MCPToolName = 'get_doc_for_file' | 'search_project_symbols' | 'autocomplete_symbol' | 'get_doc_for_symbol' | 'find_usages';
 
 // Define interfaces for MCP responses
 interface ErrorResponse {
@@ -76,6 +79,15 @@ async function processMCPRequest(requestJson: string): Promise<void> {
       case 'search_project_symbols':
         response = await handleSearchProjectSymbols(request.input as SearchProjectSymbolsInput);
         break;
+      case 'autocomplete_symbol':
+        response = await handleAutocompleteSymbol(request.input as AutocompleteSymbolInput);
+        break;
+      case 'get_doc_for_symbol':
+        response = await handleGetDocForSymbol(request.input as GetDocForSymbolInput);
+        break;
+      case 'find_usages':
+        response = await handleFindUsages(request.input as FindUsagesInput);
+        break;
       default:
         response = {
           error: 'Unknown tool',
@@ -138,4 +150,34 @@ async function handleGetDocForFile(input: GetDocForFileInput): Promise<any> {
 async function handleSearchProjectSymbols(input: SearchProjectSymbolsInput): Promise<any> {
   // Pass through to the searchProjectSymbols implementation
   return await searchProjectSymbols(input);
+}
+
+/**
+ * Handles the autocomplete_symbol tool request
+ * @param input The autocomplete query input
+ * @returns Symbol autocompletion results
+ */
+async function handleAutocompleteSymbol(input: AutocompleteSymbolInput): Promise<any> {
+  // Pass through to the autocompleteSymbol implementation
+  return await autocompleteSymbol(input);
+}
+
+/**
+ * Handles the get_doc_for_symbol tool request
+ * @param input The symbol query input
+ * @returns Symbol documentation results
+ */
+async function handleGetDocForSymbol(input: GetDocForSymbolInput): Promise<any> {
+  // Pass through to the getDocForSymbol implementation
+  return await getDocForSymbol(input);
+}
+
+/**
+ * Handles the find_usages tool request
+ * @param input The find usages query input
+ * @returns Symbol usage locations
+ */
+async function handleFindUsages(input: FindUsagesInput): Promise<any> {
+  // Pass through to the findUsages implementation
+  return await findUsages(input);
 }

@@ -1,4 +1,6 @@
 import * as path from 'path';
+import * as fs from 'fs';
+import * as glob from 'glob';
 import { FileDocResponse } from '../types';
 
 /**
@@ -13,6 +15,16 @@ export enum SymbolType {
   TYPE = 'type',
   ROUTE = 'route',
   VARIABLE = 'variable'
+}
+
+/**
+ * File tracking information
+ */
+export interface FileTrackingInfo {
+  path: string;           // Absolute file path
+  lastParsed: number;     // Timestamp when the file was last parsed
+  lastModified: number;   // Last modified timestamp of the file
+  exists: boolean;        // Whether the file still exists
 }
 
 /**
@@ -53,10 +65,129 @@ export interface SymbolSearchResult {
 }
 
 /**
+ * Registry state interface
+ */
+export interface RegistryState {
+  symbols: SymbolInfo[];
+  files: FileTrackingInfo[];
+  lastFullRefresh: number;
+}
+
+/**
  * Registry for code symbols found across the project
  */
 export class SymbolRegistry {
+  // Private state
   private symbols: SymbolInfo[] = [];
+  private files: FileTrackingInfo[] = [];
+  private lastFullRefresh: number = 0;
+  
+  /**
+   * Initialize the registry from a persisted state
+   * @param state The persisted registry state
+   */
+  initializeFromState(state: RegistryState): void {
+    if (state.symbols && state.symbols.length > 0) {
+      this.symbols = state.symbols;
+    }
+    
+    if (state.files && state.files.length > 0) {
+      this.files = state.files;
+    }
+    
+    if (state.lastFullRefresh && state.lastFullRefresh > 0) {
+      this.lastFullRefresh = state.lastFullRefresh;
+    }
+  }
+  
+  /**
+   * Track a file in the registry
+   * @param filePath Path to the file
+   * @param exists Whether the file exists
+   */
+  trackFile(filePath: string, exists: boolean = true): void {
+    const absolutePath = path.resolve(filePath);
+    
+    // Check if file already exists in tracking
+    const existingIndex = this.files.findIndex(f => f.path === absolutePath);
+    
+    const now = Date.now();
+    let lastModified = now;
+    
+    // Get file's last modified time if it exists
+    if (exists && fs.existsSync(absolutePath)) {
+      const stats = fs.statSync(absolutePath);
+      lastModified = stats.mtimeMs;
+    }
+    
+    if (existingIndex >= 0) {
+      // Update existing file tracking
+      this.files[existingIndex] = {
+        ...this.files[existingIndex],
+        lastParsed: now,
+        lastModified,
+        exists
+      };
+    } else {
+      // Add new file tracking
+      this.files.push({
+        path: absolutePath,
+        lastParsed: now,
+        lastModified,
+        exists
+      });
+    }
+  }
+  
+  /**
+   * Check if a file needs to be re-parsed
+   * @param filePath Path to the file
+   * @returns Whether the file needs to be re-parsed
+   */
+  fileNeedsRefresh(filePath: string): boolean {
+    const absolutePath = path.resolve(filePath);
+    
+    // Check if file exists
+    if (!fs.existsSync(absolutePath)) {
+      return false; // File doesn't exist, can't refresh
+    }
+    
+    // Get file stats
+    const stats = fs.statSync(absolutePath);
+    const fileModified = stats.mtimeMs;
+    
+    // Find file in tracking
+    const fileInfo = this.files.find(f => f.path === absolutePath);
+    
+    if (!fileInfo) {
+      return true; // File not tracked yet, needs parsing
+    }
+    
+    // Check if file has been modified since last parse
+    return fileModified > fileInfo.lastParsed;
+  }
+  
+  /**
+   * Clean up symbols for deleted files
+   */
+  cleanupDeletedFiles(): void {
+    // Find files that no longer exist
+    const deletedFiles = this.files.filter(f => !fs.existsSync(f.path));
+    
+    // Remove symbols for deleted files
+    for (const file of deletedFiles) {
+      this.symbols = this.symbols.filter(s => s.file !== file.path);
+      
+      // Mark file as not existing
+      const fileIndex = this.files.findIndex(f => f.path === file.path);
+      if (fileIndex >= 0) {
+        this.files[fileIndex].exists = false;
+      }
+    }
+    
+    // Persist changes
+    this.persistToDisk();
+  }
   
   /**
    * Register a new symbol
@@ -81,6 +212,26 @@ export class SymbolRegistry {
       // Add new symbol
       this.symbols.push(symbol);
     }
+    
+    // Persist the updated registry to disk
+    this.persistToDisk();
+  }
+  
+  /**
+   * Persist the symbol registry to disk
+   */
+  private persistToDisk(): void {
+    try {
+      const state: RegistryState = {
+        symbols: this.symbols,
+        files: this.files,
+        lastFullRefresh: this.lastFullRefresh
+      };
+      
+      fs.writeFileSync(REGISTRY_FILE_PATH, JSON.stringify(state, null, 2), 'utf8');
+    } catch (error) {
+      console.error('Error persisting symbol registry:', error);
+    }
   }
   
   /**
@@ -89,6 +240,12 @@ export class SymbolRegistry {
    */
   registerFileSymbols(fileDoc: FileDocResponse): void {
     const filePath = fileDoc.filePath;
+    
+    // Track this file
+    this.trackFile(filePath);
+    
+    // Remove any existing symbols for this file before adding new ones
+    this.symbols = this.symbols.filter(s => s.file !== filePath);
     
     // Register functions
     if (fileDoc.functions) {
@@ -316,12 +473,101 @@ export class SymbolRegistry {
   }
   
   /**
+   * Refresh the registry to handle file changes
+   * @param baseDir Base directory to scan for files (default: current working directory)
+   */
+  async refresh(baseDir: string = process.cwd()): Promise<void> {
+    // Clean up symbols for deleted files
+    this.cleanupDeletedFiles();
+    
+    // Find all tracked files that need refresh
+    const filesToRefresh = this.files
+      .filter(f => f.exists && this.fileNeedsRefresh(f.path))
+      .map(f => f.path);
+    
+    // Return without further action if no files need refresh
+    if (filesToRefresh.length === 0) {
+      return;
+    }
+    
+    // TODO: This would re-parse the files, but we'd need access to the parsers
+    // For now, we'll just remove the symbols for these files
+    for (const file of filesToRefresh) {
+      this.symbols = this.symbols.filter(s => s.file !== file);
+    }
+    
+    // Update the last full refresh timestamp
+    this.lastFullRefresh = Date.now();
+    
+    // Persist the changes
+    this.persistToDisk();
+  }
+  
+  /**
+   * Perform a full scan of the codebase to discover all files
+   * @param baseDir Base directory to scan
+   * @param patterns File patterns to include (default: all TypeScript and JavaScript files)
+   */
+  async fullScan(baseDir: string = process.cwd(), patterns: string[] = ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx']): Promise<string[]> {
+    const foundFiles: string[] = [];
+    
+    for (const pattern of patterns) {
+      const files = await glob.glob(pattern, { cwd: baseDir, absolute: true });
+      foundFiles.push(...files);
+    }
+    
+    // Mark these files as needing parsing
+    for (const file of foundFiles) {
+      // Only track if we haven't seen this file before
+      if (!this.files.some(f => f.path === file)) {
+        this.trackFile(file, true);
+      }
+    }
+    
+    return foundFiles;
+  }
+  
+  /**
    * Clear all registered symbols
    */
   clear(): void {
     this.symbols = [];
+    this.files = [];
+    this.lastFullRefresh = 0;
+    this.persistToDisk();
   }
 }
 
-// Create a singleton instance of the registry
-export const symbolRegistry = new SymbolRegistry();
+// File path for persistence
+const REGISTRY_FILE_PATH = path.join(process.cwd(), '.symbol-registry.json');
+
+/**
+ * Load registry state from disk if available
+ */
+function loadRegistryFromDisk(): RegistryState {
+  try {
+    if (fs.existsSync(REGISTRY_FILE_PATH)) {
+      const data = fs.readFileSync(REGISTRY_FILE_PATH, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('Error loading symbol registry:', error);
+  }
+  return { symbols: [], files: [], lastFullRefresh: 0 };
+}
+
+/**
+ * Create and initialize the registry from persisted state
+ */
+function createAndInitializeRegistry(): SymbolRegistry {
+  const registry = new SymbolRegistry();
+  const persistedState = loadRegistryFromDisk();
+  
+  registry.initializeFromState(persistedState);
+  registry.cleanupDeletedFiles();
+  
+  return registry;
+}
+
+// Create a singleton instance of the registry and load persisted state
+export const symbolRegistry = createAndInitializeRegistry();
